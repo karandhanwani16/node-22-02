@@ -7,6 +7,6 @@ const customerSchema = new mongoose.Schema({
     location: { type: String, required: false },
 })
 
-const Customer = mongoose.model("Customer", customerSchema);
+const Customer = mongoose.model("Customer", customerSchema, "customer");
 
 export default Customer;

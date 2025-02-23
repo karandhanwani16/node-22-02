@@ -6,18 +6,53 @@ const app = express();
 connectDB();
 
 app.use(express.json());
-app.use(cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}));
+app.use(cors());
 
 app.get("/customers", async(req, res) => {
     try {
-        const customers = await CustomerModel.find().limit(3);
+        const customers = await CustomerModel.find();
         res.status(200).json(customers);
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+})
+
+app.post("/customers", async(req, res) => {
+    try {
+
+        const { id, name, email, location } = req.body;
+        const result = await CustomerModel.insertOne({
+            id,
+            name,
+            email,
+            location
+        });
+        console.log(result);
+
+        res.status(201).json({ message: "Customer created successfully" })
+
+
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+app.put("/customers/:id", async(req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, email, location } = req.body;
+        await CustomerModel.updateOne({ id: id }, { $set: { name, location, email } })
+        res.status(200).json({ message: "Customer updated successfully" })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+app.delete("/customers/:id", async(req, res) => {
+    try {
+        const { id } = req.params;
+        await CustomerModel.deleteOne({ id })
+        res.status(200).json({ message: "Customer deleted successfully" })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
 })
 
